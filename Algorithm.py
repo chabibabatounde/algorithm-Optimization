@@ -13,8 +13,8 @@ class Algorithm:
 
     def defineVariables(self):
         self.variables = {'a':0,'b':5,'c':8}
-        self.variables = {'a':3,'b':2,'c':1}
-        self.variables = {'a':0,'b':1,'c':2}
+        #self.variables = {'a':3,'b':2,'c':1}
+        #self.variables = {'a':0,'b':1,'c':2}
 
     def addNode(self, nodeId, node, label=None):
         if label is None:

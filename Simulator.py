@@ -14,7 +14,7 @@ class Simulator:
         return self.computeNode(algorithm, algorithm.start)
 
     def computeNode(self, algorithm, nodeId, previousNode=None):
-        if len(algorithm.graphe[nodeId]) >= 2:
+        if len(algorithm.graphe[nodeId]) >= 1:
             nextNode = None
             booleanOperator = [">=",">","<","=<","=="]
             isBooleanOperator =  False
@@ -52,5 +52,6 @@ class Simulator:
                     if((line!=previousNode and previousNode is not None) or (previousNode is None)):
                         nextNode = line
                         break
-            self.computeNode(algorithm, nextNode, nodeId)
+            if nextNode is not None:        
+                self.computeNode(algorithm, nextNode, nodeId)
             return algorithm
