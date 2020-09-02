@@ -16,6 +16,7 @@ class Simulator:
     def computeNode(self, algorithm, nodeId, previousNode=None):
         if len(algorithm.graphe[nodeId]) >= 1:
             nextNode = None
+            otherMethods =  True
             booleanOperator = [">=",">","<","=<","=="]
             isBooleanOperator =  False
             variables = algorithm.variables
@@ -28,6 +29,7 @@ class Simulator:
                     break
                     
             if isBooleanOperator :
+                otherMethods =  False
                 for variable in variables:
                     value = value.replace(str(variable), str(variables[variable]))
                 
@@ -38,7 +40,16 @@ class Simulator:
                         if(branch['r']==str(eval(value))):
                             nextNode = line
                             break
-            else:
+            if "logData" in value:
+                otherMethods =  False
+                algorithm.output.append(algorithm.variables)
+                neighbors = list(algorithm.graphe.neighbors(nodeId))
+                for line in neighbors:
+                    if((line!=previousNode and previousNode is not None) or (previousNode is None)):
+                        nextNode = line
+                        break
+
+            if otherMethods:
                 tab =  value.split("=")
                 leftExpression = tab[0]
                 rightExpression = tab[1]

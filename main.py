@@ -7,4 +7,4 @@ alg = Algorithm()
 simulator = Simulator()
 alg = simulator.run(alg)
 
-print(alg.variables)
+print(alg.output)
