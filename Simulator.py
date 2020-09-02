@@ -7,21 +7,24 @@ class Simulator:
         pass
 
     def run(self, algorithm, config=None):
+        algorithm.variables = config
         nx.draw(algorithm.graphe, labels=algorithm.labeldict, with_labels = True)
         #edge_labels=nx.draw_networkx_edge_labels(algorithm.graphe,pos=nx.spring_layout(algorithm.graphe))
         #plt.show()
         plt.clf()
-        outputFile = open("output.json", "w")
+        outputFile = open(".output.json", "w")
         outputFile.write("[\n")
         outputFile.close()
-        res = self.computeNode(algorithm, algorithm.start)
-        outputFile = open("output.json", "r")
+        self.computeNode(algorithm, algorithm.start)
+        outputFile = open(".output.json", "r")
         data = outputFile.read()[:-2]
         outputFile.close()
-        outputFile = open("output.json", "w")
+        #OPTIONAL
+        outputFile = open(".output.json", "w")
         outputFile.write(data+"\n]")
         outputFile.close()
-        return res
+        #OPTIONAL
+        return json.loads(data+"\n]")
 
     def computeNode(self, algorithm, nodeId, previousNode=None):
         if len(algorithm.graphe[nodeId]) >= 1:
@@ -53,7 +56,7 @@ class Simulator:
             if "logData" in value:
                 otherMethods =  False
                 algorithm.output.append(algorithm.variables)
-                outputFile = open("output.json","a")
+                outputFile = open(".output.json","a")
                 outputFile.write("\t"+ json.dumps(algorithm.variables)+",\n")
                 outputFile.close()
                 #algorithm.output.append()

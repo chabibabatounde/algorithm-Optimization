@@ -9,13 +9,8 @@ class Algorithm:
         self.labeldict = {}
         self.start = 0
         self.defineAlgorithm()
-        self.defineVariables()
+        self.variables = {}
         self.output = []
-
-    def defineVariables(self):
-        self.variables = {'w':60,'f':10,'x':0,'y':0,'t':0}
-        #self.variables = {'a':3,'b':2,'c':1}
-        #self.variables = {'a':0,'b':1,'c':2}
 
     def addNode(self, nodeId, node, label=None):
         if label is None:

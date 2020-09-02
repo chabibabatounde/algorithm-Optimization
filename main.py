@@ -4,5 +4,8 @@ from Simulator import *
 
 alg = Algorithm()
 simulator = Simulator()
-alg = simulator.run(alg)
-#print(alg.output)
+
+parametersDict={'w':60,'f':10,'x':0,'y':0,'t':0}
+output = simulator.run(alg,parametersDict)
+
+print(output)
