@@ -34,7 +34,7 @@ class Simulator:
             isBooleanOperator =  False
             variables = algorithm.variables
             value = algorithm.graphe.nodes[nodeId]['value']
-
+            #print(value)
             for element in booleanOperator:
                 if element in value:
                     isBooleanOperator = True

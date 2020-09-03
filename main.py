@@ -1,11 +1,13 @@
 # coding: utf-8
 from Algorithm import *
-from Simulator import *
+from Optimizer import *
 
-alg = Algorithm()
-simulator = Simulator()
+algorithm = Algorithm()
 
-parametersDict={'w':60,'f':10,'x':0,'y':0,'t':0}
-output = simulator.run(alg,parametersDict)
+Outvariables = {'w':0,'f':0,}
+variables = {'x':0,'y':0,'t':0}
+optimizer = Optimizer(algorithm, variables, Outvariables,"dataset.json")
 
-print(output)
+result =  optimizer.optimize()
+
+#print(result)
