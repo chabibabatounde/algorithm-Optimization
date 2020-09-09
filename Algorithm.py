@@ -4,13 +4,27 @@ from Operator.boolOperator import *
 
 class Algorithm:
     def __init__(self):
+        #TO DEFINE
+        self.config_items = ['w','f']
+        self.program_variables = ['x','y','t']
+        #INITIALISATION
+        self.output = []
         self.graphe = nx.Graph()
         self.grapheNodes = []
         self.labeldict = {}
         self.start = 0
         self.defineAlgorithm()
-        self.variables = {}
-        self.output = []
+        self.all_variables_value =  {}
+        #OPTIONAL
+        self.default_init()
+
+        
+    def default_init(self):
+        for item in self.config_items:
+            self.all_variables_value[item]=0
+        for item in self.program_variables:
+            self.all_variables_value[item]=0
+
 
     def addNode(self, nodeId, node, label=None):
         if label is None:
@@ -29,7 +43,7 @@ class Algorithm:
         self.addNode(7,"t=0")
         self.addNode(8,"t=t+1")
         self.addNode(9,"w=w+5")
-        self.addNode(10,"y=y-(w/10 + x)")
+        self.addNode(10,"y=y-(w/10.0 + x)")
         self.addNode(11,"logData")
         self.addNode(12,"t==24")
         self.addNode(13,"t=0")

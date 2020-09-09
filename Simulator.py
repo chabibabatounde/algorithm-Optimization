@@ -7,7 +7,6 @@ class Simulator:
         pass
 
     def run(self, algorithm, config=None):
-        algorithm.variables = config
         nx.draw(algorithm.graphe, labels=algorithm.labeldict, with_labels = True)
         #edge_labels=nx.draw_networkx_edge_labels(algorithm.graphe,pos=nx.spring_layout(algorithm.graphe))
         #plt.show()
@@ -32,18 +31,18 @@ class Simulator:
             otherMethods =  True
             booleanOperator = [">=",">","<","=<","=="]
             isBooleanOperator =  False
-            variables = algorithm.variables
             value = algorithm.graphe.nodes[nodeId]['value']
-            #print(value)
             for element in booleanOperator:
                 if element in value:
                     isBooleanOperator = True
                     break
-                    
+
             if isBooleanOperator :
                 otherMethods =  False
-                for variable in variables:
-                    value = value.replace(str(variable), str(variables[variable]))
+                for variable in algorithm.program_variables:
+                    value = value.replace(str(variable), str(algorithm.all_variables_value[variable]))
+                for variable in algorithm.config_items:
+                    value = value.replace(str(variable), str(algorithm.all_variables_value[variable]))
                 
                 neighbors = list(algorithm.graphe.neighbors(nodeId))
                 for line in neighbors:
@@ -52,12 +51,11 @@ class Simulator:
                         if(branch['r']==str(eval(value))):
                             nextNode = line
                             break
-
             if "logData" in value:
                 otherMethods =  False
-                algorithm.output.append(algorithm.variables)
+                algorithm.output.append(algorithm.all_variables_value)
                 outputFile = open(".output.json","a")
-                outputFile.write("\t"+ json.dumps(algorithm.variables)+",\n")
+                outputFile.write("\t"+ json.dumps(algorithm.all_variables_value)+",\n")
                 outputFile.close()
                 #algorithm.output.append()
 
@@ -66,22 +64,22 @@ class Simulator:
                     if((line!=previousNode and previousNode is not None) or (previousNode is None)):
                         nextNode = line
                         break
-
             if otherMethods:
                 tab =  value.split("=")
                 leftExpression = tab[0]
                 rightExpression = tab[1]
-                for variable in variables:
-                    rightExpression = rightExpression.replace(str(variable), str(variables[variable]))
-                variables[leftExpression] = eval(rightExpression)
-                algorithm.variables=variables
-
+                for variable in algorithm.program_variables:
+                    rightExpression = rightExpression.replace(str(variable), str(algorithm.all_variables_value[variable]))
+                for variable in algorithm.config_items:
+                    rightExpression = rightExpression.replace(str(variable), str(algorithm.all_variables_value[variable]))
+                algorithm.all_variables_value[leftExpression] =  eval(rightExpression)
+                
                 neighbors = list(algorithm.graphe.neighbors(nodeId))
                 for line in neighbors:
                     if((line!=previousNode and previousNode is not None) or (previousNode is None)):
                         nextNode = line
                         break
-
+            
             if nextNode is not None:        
                 self.computeNode(algorithm, nextNode, nodeId)
             return algorithm

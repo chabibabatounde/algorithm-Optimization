@@ -3,34 +3,35 @@ from Algorithm import *
 from Simulator import *
 import random
 import json
-
+import math
 from copy import deepcopy
 import struct
 from operator import itemgetter
 
 class Optimizer:
-    def __init__(self, algorithm, varibles, Outvariables, dataSet):
+    def __init__(self, algorithm, dataSet):
         self.algorithm = algorithm
-        self.varibles = varibles
-        self.Outvariables = Outvariables
         dataSet =  open(dataSet,'r')
         self.dataSet = json.loads(dataSet.read())
 
-    def optimize(self, populationSize=100, maxIterration=1000):
-        return self.genetic(populationSize, maxIterration)
+    def optimize(self, populationSize=100, maxIterration=20, pourcentage=20):
+        return self.genetic(populationSize, maxIterration, pourcentage)
 
-    def evalSubject(self, population ,sorted="ASC"):
+    def gentic_evalSubject(self, population ,sorted="ASC"):
         newPopulation = []
         for subject in population:
             fitness = 0
-            for line in self.dataSet:
-                for key in line:
-                    fitness += line[key] - subject[key]
-            subject["_"] = fitness
+            #simulate subject and get dataset
+            simulator = Simulator()
+            subject_dataset = simulator.run(self.algorithm,subject)
+            for i in range(0,len(self.dataSet)):
+                dataset_line = self.dataSet[i]
+                subject_line = subject_dataset[i]
+                for key in dataset_line:
+                    fitness += math.pow(subject_line[key] - dataset_line[key],2)
+            subject["_"] = fitness / float(len(self.dataSet))
             newPopulation.append(subject)
-        #population =  sorted(newPopulation, key=itemgetter('fit'))
-        population = newPopulation
-        return population
+        return newPopulation
 
     def genetic_parents_selection(self, population):
         return population[random.randint(0, len(population)-1)], population[random.randint(0, len(population)-1)]
@@ -50,9 +51,6 @@ class Optimizer:
     def genetic_bin_to_float(self, bin):
         hx = hex(int(bin, 2))   
         result = struct.unpack("d", struct.pack("q", int(hx, 16)))[0]
-        if (len(result) < 64):
-            for i in range(0, 64-len(result)):
-                result = "0"+result
         return result
 
     def genetic_codage(self, subject):
@@ -62,52 +60,91 @@ class Optimizer:
             bin = self.genetic_float_to_bin(value)
             binaryStr += bin
         return binaryStr
-        
 
-    def genetic_decodage(self, code):
-        return {}
+    def genetic_decodage(self, code, ref):
+        start_index = 0
+        end_index = 64
+        subject = {}
+        for key in ref:
+            if key!="_":
+                value =  self.genetic_bin_to_float(code[start_index:end_index])
+                #print("key="+key+" bin ="+code[start_index:end_index]+" value="+str(value))
+                start_index = start_index+64
+                end_index = end_index+64
+                subject[key] =  value
+        return subject
+    
+    def genetic_crossing_point(self, subject_length):
+        maximum_croissing = 64
+        points = []
+        number_of_crossing =  random.randint(1,maximum_croissing)
+        for i in range (0, number_of_crossing):
+            points.append(random.randint(1,subject_length))
+        points.append(0)
+        points.append(subject_length)
+        points = sorted(points)
+        return points
 
     def genetic_crossing(self, parents):
-        code1 =  self.genetic_codage(parents[0])
-        code2 =  self.genetic_codage(parents[1])
+        parent1 = deepcopy(parents[0])
+        parent2 = deepcopy(parents[1])
+        parent1.pop("_")
+        parent2.pop("_")
+        code1 =  self.genetic_codage(parent1)
+        code2 =  self.genetic_codage(parent2)
         
-        return parents
+        points = self.genetic_crossing_point(len(code1))
+        child1 = ""
+        child2 = ""
+        switch = False
 
-    def genetic(self, populationSize, maxIterration):
+        for i in range(0, len(points)-1):
+            if(switch):
+                child1 = child1+code2[points[i]:points[i+1]]
+                child2 = child2+code1[points[i]:points[i+1]]
+            else:
+                child1 = child1+code1[points[i]:points[i+1]]
+                child2 = child2+code2[points[i]:points[i+1]]
+            switch = not switch
+        child1 = self.genetic_decodage(child1, parent1)
+        child2 = self.genetic_decodage(child2, parent2)
+        return child1,child2
+
+    def genetic(self, populationSize, maxIterration, pourcentage):
         iterration = 1
         population  = []
-        #=> Générer une population
+        #Générer une population
         for i in range(0, populationSize):
-            subject = deepcopy(self.varibles)
-            for key in self.Outvariables:
+            subject = {}
+            for key in self.algorithm.config_items:
                 randomData = random.randint(0,24)
                 subject[key] =  randomData
             population.append(subject)
-            
-        #=> evaluer la population
-        population = self.evalSubject(population)
-        
-        #=> tant que pas de solution
-        while iterration < maxIterration:
-            maxIterration
-            #=> Sélectionner les reproducteurs
-            parents = self.genetic_parents_selection(population)
-            #=> croiser les reproducteurs
-            enfants = self.genetic_crossing(parents)
-            #=> muter les enfants
-            #=> Evaluer
-            #=> Mise à jour de la population
+        #evaluer la population
+        population = self.gentic_evalSubject(population)
+        #Trier la population
+        population =  sorted(population, key=itemgetter('_'))
+
+        #tant que pas de solution
+        while iterration <= maxIterration:
+            crossing = int(round(populationSize/100. * pourcentage))
+            #Debut des croisements
+            new_generation = []
+            for i in range(0, crossing):
+                #sélection des parents et croisements
+                parents = self.genetic_parents_selection(population)
+                childs = self.genetic_crossing(parents)
+                #creation de la nouvelle génération
+                new_generation.append(childs[0])
+                new_generation.append(childs[1])
+            #evaluation de la nouvelle génération
+            new_generation = self.gentic_evalSubject(new_generation)
+            #Fusion des populations
+            population =  population + new_generation
+            #Ordonner la population
+            population =  sorted(population, key=itemgetter('_'))
+            #Mise à jour de la population
+            population = population[:populationSize]
+            print("[Iterration "+str(iterration)+"] : \t most_best = "+str(population[0]['_'])+" \t most_bad = "+str(population[populationSize-1]['_']))
             iterration += 1
-
-        
-
-
-        parametersDict={'w':60,'f':10,'x':0,'y':0,'t':0}
-        simulator = Simulator()
-        #print(parametersDict)
-        #print(population[0])
-        
-        output = simulator.run(self.algorithm,population[5])
-        #output = simulator.run(self.algorithm,parametersDict)
-
-        return output
+        return population[0]
