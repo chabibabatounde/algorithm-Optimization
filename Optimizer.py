@@ -39,8 +39,8 @@ class Optimizer:
             for i in range(0, crossing):
                 #sélection des parents et croisements
                 parents = self.genetic_parents_selection(population)
-                #childs = self.genetic_crossing(parents)
-                childs = self.genetic_crossing_with_normal_law(parents)
+                childs = self.genetic_crossing(parents)
+                #childs = self.genetic_crossing_with_normal_law(parents)
                 #creation de la nouvelle génération
                 new_generation.append(childs[0])
                 new_generation.append(childs[1])
@@ -81,8 +81,8 @@ class Optimizer:
                         fitness += math.pow(subject_line[key] - dataset_line[key],2)
                     except OverflowError:
                         fitness = float('inf')
-            subject["_"] = fitness
-            #subject["_"] = fitness / float(len(self.dataSet))
+            #subject["_"] = fitness
+            subject["_"] = fitness / float(len(self.dataSet))
             newPopulation.append(subject)
         return newPopulation
 
@@ -148,6 +148,23 @@ class Optimizer:
                 child2[key] = (1-proportion)*parents[0][key]+ proportion*parents[1][key]
         return child1, child2
 
+    def genetic_bin_mutation(self, code):
+        number = random.uniform(0,1)
+        if number > 0.95:
+            code = list(code)
+            mutation_number = random.randint(1,8)
+            mutation_index = []
+            for i in range(1, mutation_number):
+                mutation_index.append(random.randint(0,len(code)))
+            mutation_index =  sorted(mutation_index)
+            for index in mutation_index:
+                if(index%16!=0):
+                    if(code[index]=="0"):
+                        code[index]="1"
+                    else:
+                        code[index]="0"
+        return "".join(code)
+
     def genetic_crossing(self, parents):
         #parent1 = deepcopy(parents[0])
         parent1 = deepcopy(parents[0])
@@ -171,10 +188,10 @@ class Optimizer:
                 child1 = child1+code1[points[i]:points[i+1]]
                 child2 = child2+code2[points[i]:points[i+1]]
             switch = not switch
-        '''print("\t\t"+code1)
-        print("\t\t"+child1)
-        print("\t\t"+code2)
-        print("")'''
+
+        child1 = self.genetic_bin_mutation(child1)
+        child2 = self.genetic_bin_mutation(child2)
+
         child1 = self.genetic_decodage(child1, parent1)
         child2 = self.genetic_decodage(child2, parent2)
         return child1,child2
