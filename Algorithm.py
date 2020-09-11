@@ -18,13 +18,15 @@ class Algorithm:
         #OPTIONAL
         self.default_init()
 
-        
     def default_init(self):
         for item in self.config_items:
             self.all_variables_value[item]=0
         for item in self.program_variables:
             self.all_variables_value[item]=0
 
+    def config_init(self, config):
+        for item in config:
+            self.all_variables_value[item]= config[item]
 
     def addNode(self, nodeId, node, label=None):
         if label is None:
