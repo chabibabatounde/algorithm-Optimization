@@ -77,7 +77,6 @@ class Optimizer:
                 for key in dataset_line:
                     #print(key)
                     try:
-                        #ans = math.exp(200000)
                         fitness += math.pow(subject_line[key] - dataset_line[key],2)
                     except OverflowError:
                         fitness = float('inf')
