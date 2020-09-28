@@ -39,8 +39,8 @@ class Optimizer:
             for i in range(0, crossing):
                 #sélection des parents et croisements
                 parents = self.genetic_parents_selection(population)
-                childs = self.genetic_crossing(parents)
-                #childs = self.genetic_crossing_with_normal_law(parents)
+                #childs = self.genetic_crossing(parents)
+                childs = self.genetic_crossing_with_normal_law(parents)
                 #creation de la nouvelle génération
                 new_generation.append(childs[0])
                 new_generation.append(childs[1])
@@ -81,7 +81,7 @@ class Optimizer:
                     except OverflowError:
                         fitness = float('inf')
             #subject["_"] = fitness
-            subject["_"] = fitness / float(len(self.dataSet))
+            subject["_"] = fitness / (2 * float(len(self.dataSet)))
             newPopulation.append(subject)
         return newPopulation
 
@@ -145,7 +145,25 @@ class Optimizer:
             if key != "_":
                 child1[key] = proportion*parents[0][key]+ (1-proportion)*parents[1][key]
                 child2[key] = (1-proportion)*parents[0][key]+ proportion*parents[1][key]
+        child1 =  self.genetic_mutation(child1)
+        child2 =  self.genetic_mutation(child2)
+        
         return child1, child2
+
+    def genetic_mutation(self, subject):
+        number = random.uniform(0,1)
+        mutation_limit = 3
+        subject_keys = subject.keys()
+        if number > 0.95:
+            mutation_number = random.randint(1,len(subject))
+            for i in range(0, mutation_number):
+                number = random.uniform(0,1)
+                value = random.uniform(0,mutation_limit)
+                if number <= 0.5:
+                    value = -random.uniform(0,mutation_limit)
+                key = subject_keys[random.randint(0,(len(subject)-1))]
+                subject[key] += value 
+        return subject
 
     def genetic_bin_mutation(self, code):
         number = random.uniform(0,1)

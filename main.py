@@ -7,6 +7,6 @@ algorithm = Algorithm()
 algorithm = classic_algo()
 
 optimizer = Optimizer(algorithm,"dataset.json")
-result =  optimizer.optimize(100,100,10)
+result =  optimizer.optimize(100,1000,40)
 
 print(result)

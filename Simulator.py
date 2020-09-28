@@ -13,11 +13,6 @@ class Simulator:
         #edge_labels=nx.draw_networkx_edge_labels(algorithm.graphe,pos=nx.spring_layout(algorithm.graphe))
         #plt.show()
         plt.clf()
-        #
-        #
-        #
-        #
-        #
         #print(algorithm.all_variables_value)
         #print(config)
         algorithm.config_init(config)
@@ -36,7 +31,6 @@ class Simulator:
                 if element in value:
                     isBooleanOperator = True
                     break
-
 
             if isBooleanOperator :
                 otherMethods =  False
@@ -76,7 +70,6 @@ class Simulator:
                     if((line!=previousNode and previousNode is not None) or (previousNode is None)):
                         nextNode = line
                         break
-
             if nextNode is not None:        
                 algorithm = self.computeNode(algorithm, nextNode, nodeId)
             

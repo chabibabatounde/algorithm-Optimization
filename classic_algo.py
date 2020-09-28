@@ -65,7 +65,7 @@ class classic_algo:
         self.addNode(23,"t=t+1")
         self.addNode(24,"t=0")
 
-        self.graphe.add_edge(0, 1)
+        self.graphe.add_edge(0, 1, r='Pass')
         self.graphe.add_edge(1, 2, r="True")
         self.graphe.add_edge(2, 3)
         self.graphe.add_edge(3, 4)
@@ -73,6 +73,10 @@ class classic_algo:
         self.graphe.add_edge(5, 6)
         self.graphe.add_edge(6, 7, r="False")
         self.graphe.add_edge(6, 8, r="True")
+
+        self.graphe.add_edge(7, 1, r="Loop")
+        #self.graphe.add_edge(8, 1, r="Loop")
+
 
         self.graphe.add_edge(1, 9, r="False")
         self.graphe.add_edge(9, 10, r="True")
@@ -83,6 +87,10 @@ class classic_algo:
         self.graphe.add_edge(14, 15, r="False")
         self.graphe.add_edge(14, 16, r="True")
 
+        self.graphe.add_edge(16, 1, r="Loop")
+        self.graphe.add_edge(15, 1, r="Loop")
+
+
         self.graphe.add_edge(9, 17, r="False")
         self.graphe.add_edge(17, 18, r="True")
         self.graphe.add_edge(18, 19)
@@ -90,4 +98,10 @@ class classic_algo:
         self.graphe.add_edge(20, 21)
         self.graphe.add_edge(21, 22)
         self.graphe.add_edge(22, 23, r="False")
-        self.graphe.add_edge(22, 24, r="True")
+        #self.graphe.add_edge(22, 24, r="True")
+
+        self.graphe.add_edge(24, 1, r="Loop")
+        self.graphe.add_edge(23, 1, r="Loop")
+
+
+        self.start = 0
