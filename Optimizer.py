@@ -10,6 +10,11 @@ from operator import itemgetter
 
 class Optimizer:
     def __init__(self, algorithm, dataSet):
+        self.metric = {
+            'worse_fitness' : [],
+            'best_fitness' :  [],
+            'fitness_average' :  [],
+        }
         self.algorithm = algorithm
         dataSet =  open(dataSet,'r')
         self.dataSet = json.loads(dataSet.read())
@@ -24,7 +29,7 @@ class Optimizer:
         for i in range(0, populationSize):
             subject = {}
             for key in self.algorithm.config_items:
-                randomData = random.randint(0,24)
+                randomData = random.randint(0,1000)
                 subject[key] =  randomData
             population.append(subject)
         #evaluer la population
@@ -54,9 +59,15 @@ class Optimizer:
                 print(item['_'])'''
             #Mise à jour de la population
             population = population[:populationSize]
+            self.metric["worse_fitness"].append(population[populationSize-1]['_'])
+            self.metric["best_fitness"].append(population[0]['_'])
+            average = 0
+            for item in population:
+                average += item['_']
+            self.metric["fitness_average"].append(average/float(len(population)))
             print("\t[Iterration "+str(iterration)+"] : \t most_best = "+str(population[0]['_'])+" \t most_bad = "+str(population[populationSize-1]['_']))
             iterration += 1
-        return population[0]
+        return population[0], self.metric, self.dataSet
 
     def gentic_evalSubject(self, population ,sorted="ASC"):
         newPopulation = []
