@@ -40,7 +40,7 @@ class classic_algo:
         #Repos
         self.addNode(1,"((t>=0 and t<=6) or (t>=22 and t<=23))")
         self.addNode(2,"e=e+h")
-        self.addNode(3,"x=x+((1/10)*e)")
+        self.addNode(3,"x=x+((1)*e)")
         self.addNode(4,"y=y+1")
         self.addNode(5,"logData")
         self.addNode(6,"t==23")
@@ -49,7 +49,7 @@ class classic_algo:
         #Balade
         self.addNode(9,"((t>=7 and t<=12) or (t>=16 and t<=21))")
         self.addNode(10,"e=e+f")
-        self.addNode(11,"y= y + ((2/10)*e)")
+        self.addNode(11,"y= y + ((2)*(e))")
         self.addNode(12,"x=x+3")
         self.addNode(13,"logData")
         self.addNode(14,"t==23")

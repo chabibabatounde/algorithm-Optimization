@@ -11,6 +11,8 @@ from operator import itemgetter
 class Optimizer:
     def __init__(self, algorithm, dataSet):
         self.metric = {
+            'midle_solution' : None,
+            'start_solution' : None,
             'worse_fitness' : [],
             'best_fitness' :  [],
             'fitness_average' :  [],
@@ -23,6 +25,7 @@ class Optimizer:
         return self.genetic(populationSize, maxIterration, pourcentage)
 
     def genetic(self, populationSize, maxIterration, pourcentage):
+        self.metric['max_iterration'] = maxIterration
         iterration = 1
         population  = []
         #Générer une population
@@ -65,9 +68,14 @@ class Optimizer:
             for item in population:
                 average += item['_']
             self.metric["fitness_average"].append(average/float(len(population)))
+
+            if iterration == 1:
+                self.metric['start_solution'] = deepcopy(population[0])
+            if iterration == maxIterration/2:
+                self.metric['midle_solution'] = deepcopy(population[0])
             print("\t[Iterration "+str(iterration)+"] : \t most_best = "+str(population[0]['_'])+" \t most_bad = "+str(population[populationSize-1]['_']))
             iterration += 1
-        return population[0], self.metric, self.dataSet
+        return population[0], self.metric
 
     def gentic_evalSubject(self, population ,sorted="ASC"):
         newPopulation = []
@@ -163,7 +171,7 @@ class Optimizer:
 
     def genetic_mutation(self, subject):
         number = random.uniform(0,1)
-        mutation_limit = 3
+        mutation_limit = 100
         subject_keys = subject.keys()
         if number > 0.95:
             mutation_number = random.randint(1,len(subject))
