@@ -17,6 +17,8 @@ class Optimizer:
             'best_fitness' :  [],
             'fitness_average' :  [],
         }
+        self.max_rand = 100
+        self.mutation_limit = 10
         self.algorithm = algorithm
         dataSet =  open(dataSet,'r')
         self.dataSet = json.loads(dataSet.read())
@@ -32,7 +34,7 @@ class Optimizer:
         for i in range(0, populationSize):
             subject = {}
             for key in self.algorithm.config_items:
-                randomData = random.randint(0,1000)
+                randomData = random.randint(0,self.max_rand)
                 subject[key] =  randomData
             population.append(subject)
         #evaluer la population
@@ -171,15 +173,14 @@ class Optimizer:
 
     def genetic_mutation(self, subject):
         number = random.uniform(0,1)
-        mutation_limit = 100
         subject_keys = subject.keys()
         if number > 0.95:
             mutation_number = random.randint(1,len(subject))
             for i in range(0, mutation_number):
                 number = random.uniform(0,1)
-                value = random.uniform(0,mutation_limit)
+                value = random.uniform(0,self.mutation_limit)
                 if number <= 0.5:
-                    value = -random.uniform(0,mutation_limit)
+                    value = -random.uniform(0,self.mutation_limit)
                 key = subject_keys[random.randint(0,(len(subject)-1))]
                 subject[key] += value 
         return subject

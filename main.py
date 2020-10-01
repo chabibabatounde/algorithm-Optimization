@@ -1,14 +1,17 @@
 # coding: utf-8
 from Algorithm import *
 from classic_algo import *
+from classic_algo_2 import *
 from Optimizer import *
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 from Simulator import *
 import json
 
 algorithm = Algorithm()
 algorithm = classic_algo()
+algorithm = classic_algo_2()
 
 dataset_file = "dataset.json"
 
@@ -16,7 +19,7 @@ dataset =  open(dataset_file,'r')
 dataset = json.loads(dataset.read())
 
 optimizer = Optimizer(algorithm,dataset_file)
-result, metrics =  optimizer.optimize(100,1000,40)
+result, metrics =  optimizer.optimize(100,100,60)
 #result, metrics =  optimizer.optimize(10,10,5)
 
 #Performances
@@ -54,6 +57,8 @@ dataset_e =[]
 
 i = 0
 itab= []
+
+bar_width = 0.35
 for item in dataset:
     itab.append(i)
 
@@ -74,30 +79,31 @@ for item in dataset:
 
     i +=1
 
-
+width = 0.27  
 fig, axs = plt.subplots(3, 2)
 axs[0,0].plot(start_x, start_y, dataset_x, dataset_y, label="Trajectoires")
 axs[0,0].set_ylabel("position sur a l'ordonnee")
 axs[0,0].set_xlabel("position sur a l'abscisse")
 axs[0,0].set_title("Trajectoires")
 axs[0,0].legend(['Solution au demarrage','Jeux de donnees'])
-axs[0,1].bar(itab, start_e, 0.35, label="Energie")
-axs[0,1].bar(itab, dataset_e, 0.35, label="Energie")
-axs[0,1].set_ylabel("valeur de E")
+axs[0,1].bar(itab, start_e, bar_width,   label="Energie")
+axs[0,1].bar(itab, dataset_e, bar_width, label="Energie")
+axs[0,1].set_ylabel("valeur de e")
 axs[0,1].set_xlabel("temps")
-axs[0,1].set_title("Variable e (Energie)")
+axs[0,1].set_title("Variable e")
 axs[0,1].legend(['Solution au demarrage','Jeux de donnees'])
+
 
 axs[1,0].plot(midle_x, midle_y, dataset_x, dataset_y, label="Trajectoires")
 axs[1,0].set_ylabel("position sur a l'ordonnee")
 axs[1,0].set_xlabel("position sur a l'abscisse")
 axs[1,0].set_title("Trajectoires")
 axs[1,0].legend(['Solution au demarrage','Jeux de donnees'])
-axs[1,1].bar(itab, midle_e, 0.35, label="Energie")
-axs[1,1].bar(itab, dataset_e, 0.35, label="Energie")
-axs[1,1].set_ylabel("valeur de E")
+axs[1,1].bar(itab, midle_e, bar_width, label="Energie")
+axs[1,1].bar(itab, dataset_e, bar_width, label="Energie")
+axs[1,1].set_ylabel("valeur de e")
 axs[1,1].set_xlabel("temps")
-axs[1,1].set_title("Variable e (Energie)")
+axs[1,1].set_title("Variable e")
 axs[1,1].legend(['Solution au demarrage','Jeux de donnees'])
 
 
@@ -106,11 +112,11 @@ axs[2,0].set_ylabel("position sur a l'ordonnee")
 axs[2,0].set_xlabel("position sur a l'abscisse")
 axs[2,0].set_title("Trajectoires")
 axs[2,0].legend(['Solution au demarrage','Jeux de donnees'])
-axs[2,1].bar(itab, solution_e, 0.35, label="Energie")
-axs[2,1].bar(itab, dataset_e, 0.35, label="Energie")
+axs[2,1].bar(itab, solution_e, bar_width, label="Energie")
+axs[2,1].bar(itab, dataset_e, bar_width, label="Energie")
 axs[2,1].set_ylabel("valeur de E")
 axs[2,1].set_xlabel("temps")
-axs[2,1].set_title("Variable e (Energie)")
+axs[2,1].set_title("Variable e")
 axs[2,1].legend(['Solution au demarrage','Jeux de donnees'])
 
 fig.set_size_inches((8.5, 11), forward=False)
@@ -119,18 +125,36 @@ plt.savefig('Data.png', dpi=100)
 
 
 plt.clf()
-fig, axs = plt.subplots(2, 1)
-axs[0].plot(iterations, metrics['best_fitness'], iterations, metrics['worse_fitness'], label="Evolution des solutions dans la population")
+fig, axs = plt.subplots(3, 1)
+axs[0].plot(iterations, metrics['best_fitness'],  label="Evolution de la meilleure solution de la population")
 axs[0].set_xlabel('Iterations')
 axs[0].set_ylabel("Adaptation")
-axs[0].set_title("Evolution des solutions")
-axs[0].legend(['Meilleure solution','Mauvaise solution'])
+axs[0].legend()
 
-axs[1].plot(iterations, metrics['fitness_average'], label="Evaluation  moyenne de la population")
+axs[1].plot(iterations, metrics['worse_fitness'], label="Evolution de la solution la moins bonne de la population")
 axs[1].set_xlabel('Iterations')
 axs[1].set_ylabel("Adaptation")
-axs[1].set_title("Evaluation  moyenne de la population")
 axs[1].legend()
+
+axs[2].plot(iterations, metrics['fitness_average'], label="Evaluation  moyenne de la population")
+axs[2].set_xlabel('Iterations')
+axs[2].set_ylabel("Adaptation")
+axs[2].set_title("Evaluation  moyenne de la population")
+axs[2].legend()
 
 fig.tight_layout()
 plt.savefig('Evolution.png')
+
+plt.clf()
+
+'''
+fig = plt.figure()
+ax = fig.add_subplot(111)
+rects1 = ax.bar(itab, start_e, bar_width,   label="Energie")
+rects2 = ax.bar(itab, dataset_e, bar_width, label="Energie")
+ax.set_ylabel("valeur de e")
+ax.set_xlabel("temps")
+ax.set_title("Variable e")
+ax.legend(['Solution au demarrage','Jeux de donnees'])
+plt.savefig('A.png')
+'''
