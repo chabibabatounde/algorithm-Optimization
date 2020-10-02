@@ -50,7 +50,7 @@ class classic_algo_2:
         self.addNode(9,"((t>=7 and t<=12) or (t>=16 and t<=21))")
         self.addNode(10,"e=e+f")
         self.addNode(11,"y= 1.1*y + ((2)*(e))")
-        self.addNode(12,"x=0.1*x+e")
+        self.addNode(12,"x=cos(0.1*x+e)")
         self.addNode(13,"logData")
         self.addNode(14,"t==23")
         self.addNode(15,"t=t+1")

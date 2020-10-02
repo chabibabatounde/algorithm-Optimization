@@ -2,6 +2,7 @@
 from Algorithm import *
 from classic_algo import *
 from classic_algo_2 import *
+from article_algo import *
 from Optimizer import *
 import numpy as np
 import matplotlib
@@ -12,6 +13,7 @@ import json
 algorithm = Algorithm()
 algorithm = classic_algo()
 algorithm = classic_algo_2()
+algorithm = article_algo()
 
 dataset_file = "dataset.json"
 
@@ -19,13 +21,14 @@ dataset =  open(dataset_file,'r')
 dataset = json.loads(dataset.read())
 
 optimizer = Optimizer(algorithm,dataset_file)
-result, metrics =  optimizer.optimize(100,100,60)
+result, metrics =  optimizer.optimize(100,1000,60)
 #result, metrics =  optimizer.optimize(10,10,5)
 
 #Performances
 iterations =  range(1, len(metrics['worse_fitness'])+1)
 
 simulator = Simulator()
+        [Iterration 327] :       most_best = 2.12096592686       most_bad = 2.34227569649
 del result['_']
 start = metrics['start_solution']
 midle = metrics['midle_solution']

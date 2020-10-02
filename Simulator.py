@@ -2,6 +2,8 @@
 import matplotlib.pyplot as plt
 import networkx as nx
 import json
+from time import sleep
+from math import *
 from copy import deepcopy
 
 class Simulator:
@@ -22,6 +24,7 @@ class Simulator:
 
     def computeNode(self, algorithm, nodeId, previousNode=None):
         if len(algorithm.graphe[nodeId]) >= 1:
+            neighbors = []
             nextNode = None
             otherMethods =  True
             booleanOperator = [">=",">","<","=<","=="]
@@ -31,30 +34,17 @@ class Simulator:
                 if element in value:
                     isBooleanOperator = True
                     break
-
             if isBooleanOperator :
                 otherMethods =  False
                 for variable in algorithm.program_variables:
                     value = value.replace(str(variable), str(algorithm.all_variables_value[variable]))
                 for variable in algorithm.config_items:
                     value = value.replace(str(variable), str(algorithm.all_variables_value[variable]))
-                neighbors = list(algorithm.graphe.neighbors(nodeId))
-                for line in neighbors:
-                    if((line!=previousNode and previousNode is not None) or (previousNode is None)):
-                        branch = algorithm.graphe[nodeId][line]
-                        if(branch['r']==str(eval(value))):
-                            nextNode = line
-                            break
-
+                
             if "logData" in value:
                 otherMethods =  False
                 algorithm.output.append(deepcopy(algorithm.all_variables_value))
-                #algorithm.output.append()
-                neighbors = list(algorithm.graphe.neighbors(nodeId))
-                for line in neighbors:
-                    if((line!=previousNode and previousNode is not None) or (previousNode is None)):
-                        nextNode = line
-                        break
+                #algorithm.output.append()                
 
             if otherMethods:
                 tab =  value.split("=")
@@ -65,12 +55,31 @@ class Simulator:
                 for variable in algorithm.config_items:
                     rightExpression = rightExpression.replace(str(variable), str(algorithm.all_variables_value[variable]))
                 algorithm.all_variables_value[leftExpression] =  eval(rightExpression)
-                neighbors = list(algorithm.graphe.neighbors(nodeId))
+                
+
+            #Getting Next Node
+            neighbors = list(algorithm.graphe.neighbors(nodeId))
+            if isBooleanOperator :
                 for line in neighbors:
                     if((line!=previousNode and previousNode is not None) or (previousNode is None)):
-                        nextNode = line
-                        break
-            if nextNode is not None:        
+                        if(nodeId < line):
+                            branch = algorithm.graphe[nodeId][line]
+                            if(branch['r']==str(eval(value))):
+                                nextNode = line
+                                break
+            else:
+                for line in neighbors:
+                    branch = algorithm.graphe[nodeId][line]
+                    if((line!=previousNode and previousNode is not None) or (previousNode is None)):
+                        if(nodeId==18):
+                            nextNode = line
+                            break
+                        if(nodeId < line):
+                            nextNode = line
+                            break
+
+
+            if nextNode is not None: 
                 algorithm = self.computeNode(algorithm, nextNode, nodeId)
             
             return algorithm

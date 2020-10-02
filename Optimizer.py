@@ -17,8 +17,8 @@ class Optimizer:
             'best_fitness' :  [],
             'fitness_average' :  [],
         }
-        self.max_rand = 100
-        self.mutation_limit = 10
+        self.max_rand = 4
+        self.mutation_limit = 0.5
         self.algorithm = algorithm
         dataSet =  open(dataSet,'r')
         self.dataSet = json.loads(dataSet.read())
@@ -42,7 +42,7 @@ class Optimizer:
         #Trier la population
         population =  sorted(population, key=itemgetter('_'))
         #tant que pas de solution
-        while iterration <= maxIterration:
+        while iterration <= maxIterration or population[0]['_']!=0:
             crossing = int(round(populationSize/100. * pourcentage))
             #Debut des croisements
             new_generation = []
@@ -96,7 +96,7 @@ class Optimizer:
                 print("")
                 '''
                 for key in dataset_line:
-                    #print(key)
+                    #print(subject_line[key])
                     try:
                         fitness += math.pow(subject_line[key] - dataset_line[key],2)
                     except OverflowError:
