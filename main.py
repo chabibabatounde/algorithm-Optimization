@@ -21,14 +21,14 @@ dataset =  open(dataset_file,'r')
 dataset = json.loads(dataset.read())
 
 optimizer = Optimizer(algorithm,dataset_file)
-result, metrics =  optimizer.optimize(100,1000,60)
+result, metrics =  optimizer.optimize(100,500,60)
+print(result)
 #result, metrics =  optimizer.optimize(10,10,5)
 
 #Performances
 iterations =  range(1, len(metrics['worse_fitness'])+1)
 
 simulator = Simulator()
-        [Iterration 327] :       most_best = 2.12096592686       most_bad = 2.34227569649
 del result['_']
 start = metrics['start_solution']
 midle = metrics['midle_solution']

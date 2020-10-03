@@ -8,7 +8,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 simulator = Simulator()
-subject = {'h2':-1,'h3':0.6,'h4':-2.2,'h5':0.25,'h6':1.1,'h7':-6.3,'h8':0.3,'h9':1.1,'h10':1.9}
+subject = {
+    'h2':11,
+    'h3':5,
+    'h4':9,
+    'h5':4,
+    'h6':1,
+    'h7':6,
+    'h8':1,
+    'h9':7,
+    'h10':3
+    }
 algorithm = article_algo()
 subject_dataset = simulator.run(deepcopy(algorithm),subject)
 for line in subject_dataset:
@@ -26,7 +36,7 @@ for item in subject_dataset:
 fig, axs = plt.subplots()
 axs.plot(start_x, start_y)
 
-plt.show()
+plt.savefig('data_set.png', dpi=100)
 f = open("output/dataset.json", "w")
 f.write(json.dumps(subject_dataset))
 f.close()

@@ -17,8 +17,8 @@ class Optimizer:
             'best_fitness' :  [],
             'fitness_average' :  [],
         }
-        self.max_rand = 4
-        self.mutation_limit = 0.5
+        self.max_rand = 50
+        self.mutation_limit = 10
         self.algorithm = algorithm
         dataSet =  open(dataSet,'r')
         self.dataSet = json.loads(dataSet.read())
@@ -34,7 +34,8 @@ class Optimizer:
         for i in range(0, populationSize):
             subject = {}
             for key in self.algorithm.config_items:
-                randomData = random.randint(0,self.max_rand)
+                #randomData = random.uniform (0.000000001,self.max_rand)
+                randomData = random.randint (1,self.max_rand)
                 subject[key] =  randomData
             population.append(subject)
         #evaluer la population
@@ -42,7 +43,7 @@ class Optimizer:
         #Trier la population
         population =  sorted(population, key=itemgetter('_'))
         #tant que pas de solution
-        while iterration <= maxIterration or population[0]['_']!=0:
+        while (iterration <= maxIterration) :
             crossing = int(round(populationSize/100. * pourcentage))
             #Debut des croisements
             new_generation = []
@@ -77,6 +78,9 @@ class Optimizer:
                 self.metric['midle_solution'] = deepcopy(population[0])
             print("\t[Iterration "+str(iterration)+"] : \t most_best = "+str(population[0]['_'])+" \t most_bad = "+str(population[populationSize-1]['_']))
             iterration += 1
+            if population[0]['_']<=10 :
+                self.metric['midle_solution'] = deepcopy(population[0])
+                break
         return population[0], self.metric
 
     def gentic_evalSubject(self, population ,sorted="ASC"):
@@ -178,7 +182,8 @@ class Optimizer:
             mutation_number = random.randint(1,len(subject))
             for i in range(0, mutation_number):
                 number = random.uniform(0,1)
-                value = random.uniform(0,self.mutation_limit)
+                #value = random.uniform(0,self.mutation_limit)
+                value = random.randint(0,self.mutation_limit)
                 if number <= 0.5:
                     value = -random.uniform(0,self.mutation_limit)
                 key = subject_keys[random.randint(0,(len(subject)-1))]

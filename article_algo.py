@@ -37,30 +37,30 @@ class article_algo:
         self.labeldict[nodeId] = label
 
     def defineAlgorithm(self):
-        self.addNode(0,"x=0")
+        self.addNode(0,"x=10")
         self.addNode(1,"y=0")
-        self.addNode(2,"e=1")
+        self.addNode(2,"e=200")
 
-        self.addNode(3,"(t>=0 and t<=20)")
+        self.addNode(3,"(t>=0 and t<=30)")
         #self.addNode(4,"x=x+h2+e+t")
-        self.addNode(4,"x=h2*x-cos(t)")
+        self.addNode(4,"x=x+(h2*cos(t))")
         #self.addNode(5,"y=(2+y)+(h3+e)+t")
-        self.addNode(5,"y=h3*(y/15)+(e/100.0)")
+        self.addNode(5,"y=(y+(e/500.0))")
         #self.addNode(6,"e=e+h4")
-        self.addNode(6,"e=e+h4")
+        self.addNode(6,"e=e-h4")
         
 
-        self.addNode(7,"(t>=21 and t<=50)")
+        self.addNode(7,"((t>=31 and t<=50) or (t>=80 and t<=100) )")
         #self.addNode(8,"x=(2+x)+(h5+e)+t")
-        self.addNode(8,"x=x-h5")
+        self.addNode(8,"x=0.25*(x+(e/h5))")
         #self.addNode(9,"y=y+(h6+e)-t")
-        self.addNode(9,"y=y*sin(h6+e)")
+        self.addNode(9,"y=(y*sin(t)) + h6")
         #self.addNode(10,"e=e+h7")
         self.addNode(10,"e=e+h7")
 
 
-        self.addNode(11,"x=(h8*x)+sin(e*t)")
-        self.addNode(12,"y=cos(e-h9+y)+x")
+        self.addNode(11,"x=x+(h8/2)")
+        self.addNode(12,"y=y+(e/(100*h9))")
         self.addNode(13,"e=e+h10")
 
 
