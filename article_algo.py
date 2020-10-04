@@ -39,7 +39,7 @@ class article_algo:
     def defineAlgorithm(self):
         self.addNode(0,"x=10")
         self.addNode(1,"y=0")
-        self.addNode(2,"e=200")
+        self.addNode(2,"e=300")
 
         self.addNode(3,"(t>=0 and t<=30)")
         #self.addNode(4,"x=x+h2+e+t")
