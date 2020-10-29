@@ -41,6 +41,7 @@ class article_algo:
         self.addNode(1,"y=0")
         self.addNode(2,"e=300")
 
+
         self.addNode(3,"(t>=0 and t<=30)")
         #self.addNode(4,"x=x+h2+e+t")
         self.addNode(4,"x=x+(h2*cos(t))")
@@ -71,12 +72,14 @@ class article_algo:
         self.addNode(17,"t=100")
         #self.addNode(17,"t=10")
 
+
         self.addNode(18,"t=t")
 
         
         self.graphe.add_edge(0, 1)
         self.graphe.add_edge(1, 2)
         self.graphe.add_edge(2, 3)
+
 
         self.graphe.add_edge(3, 4, r="True")
         self.graphe.add_edge(4, 5)
@@ -95,11 +98,11 @@ class article_algo:
         self.graphe.add_edge(9, 10)
         self.graphe.add_edge(10, 14, r='Pass')
 
+
         self.graphe.add_edge(7, 11, r="False")
         self.graphe.add_edge(11, 12)
         self.graphe.add_edge(12, 13)
         self.graphe.add_edge(13, 14, r='Pass')
-
 
 
         #self.graphe.add_edge(0, 1, r='Pass')
@@ -113,4 +116,6 @@ class article_algo:
         #self.graphe.add_edge(1, 2, r="True")
         #self.graphe.add_edge(8, 1, r="Loop")
         #self.graphe.add_edge(1, 9, r="False")
+        
+        
         self.start = 0
