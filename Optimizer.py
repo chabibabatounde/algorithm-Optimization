@@ -65,18 +65,18 @@ class Optimizer:
                 print(item['_'])'''
             #Mise à jour de la population
             population = population[:populationSize]
-            self.metric["worse_fitness"].append(population[populationSize-1]['_'])
-            self.metric["best_fitness"].append(population[0]['_'])
+            self.metric["worse_fitness"].append(log(population[populationSize-1]['_']))
+            self.metric["best_fitness"].append(log(population[0]['_']))
             average = 0
             for item in population:
-                average += item['_']
+                average += log(item['_'])
             self.metric["fitness_average"].append(average/float(len(population)))
 
             if iterration == 1:
                 self.metric['start_solution'] = deepcopy(population[0])
             if iterration == maxIterration/2:
                 self.metric['midle_solution'] = deepcopy(population[0])
-            print("\t[Iterration "+str(iterration)+"] : \t most_best = "+str(population[0]['_'])+" \t most_bad = "+str(population[populationSize-1]['_']))
+            print("\t[Iterration "+str(iterration)+"] : \t best_solution = "+str(population[0]['_'])+" \t worst_solution = "+str(population[populationSize-1]['_']))
             iterration += 1
             if population[0]['_']<=10 :
                 self.metric['midle_solution'] = deepcopy(population[0])
@@ -177,7 +177,7 @@ class Optimizer:
 
     def genetic_mutation(self, subject):
         number = random.uniform(0,1)
-        subject_keys = subject.keys()
+        subject_keys = list(subject.keys())
         if number > 0.95:
             mutation_number = random.randint(1,len(subject))
             for i in range(0, mutation_number):

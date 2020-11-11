@@ -10,6 +10,70 @@ import matplotlib.pyplot as plt
 from Simulator import *
 import json
 
+def plot_bar(solution, attente, filename="", title="Comparaison de l'energie"):
+    bar_width = 0.35
+
+    partial_attente=[]
+    partial_solution=[]
+
+    start_index = range(0,100,10)
+    stop_index = range(5,100,10)
+
+    for i in range(0, len(stop_index)):
+        partial_attente = partial_attente + attente[start_index[i]:stop_index[i]]
+        partial_solution = partial_solution + solution[start_index[i]:stop_index[i]]
+
+    attente = partial_attente
+    solution = partial_solution
+
+
+    fig, ax = plt.subplots()
+    n_groups = len(attente)
+    index = np.arange(n_groups)
+    opacity = 0.8
+    rects1 = plt.bar(index, attente, bar_width,
+    alpha=opacity,
+    label='energie attendue')
+    rects2 = plt.bar(index + bar_width, solution, bar_width,
+    alpha=opacity,
+    label='energie obtenue')
+    plt.xlabel('unite de temps')
+    plt.ylabel("Valeur de l'energie")
+    plt.title(title)
+    plt.xticks()
+    #plt.grid()
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig('graphics/'+filename+".png",dpi=200)
+    plt.clf()
+
+def subplot_path(data_1, data_2,  filename="", title="Comparaison des trajectoires", label_1="Trajectoire attendue", label_2="Trajectoire attendue", axe_x="Position sur l'abscisse", axe_y="Position sur l'ordonnee"):
+    
+    plt.plot(data_1[0],data_1[1])
+    plt.plot(data_2[0],data_2[1])
+    trim =  3
+    plt.xlim(min(data_2[0])-trim, max(data_2[0])+trim)
+    plt.ylim(min(data_2[1])-trim, max(data_2[1])+trim)
+
+    plt.xlabel(axe_x)
+    plt.ylabel(axe_y)
+    plt.legend([label_1, label_2])
+    plt.title(title)
+    plt.savefig('graphics/'+filename+".png", dpi=200)
+    plt.clf()
+
+def plot_path(data, iterations, filename="", title="Evolution de l'adapation des solutions", axe_x="Iterarion", axe_y="log (adaptation)", max_fitness=100000):
+    plt.plot(data,iterations)
+    '''
+    plt.xlim(0, len(iterations))
+    plt.ylim(0, max(data)+5)
+    '''
+    plt.xlabel(axe_x)
+    plt.ylabel(axe_y)
+    plt.title(title)
+    plt.savefig('graphics/'+filename+".png", dpi=200)
+    plt.clf()
+
 algorithm = Algorithm()
 algorithm = classic_algo()
 algorithm = classic_algo_2()
@@ -21,9 +85,7 @@ dataset =  open(dataset_file,'r')
 dataset = json.loads(dataset.read())
 
 optimizer = Optimizer(algorithm,dataset_file)
-result, metrics =  optimizer.optimize(100,500,60)
-print(result)
-#result, metrics =  optimizer.optimize(10,10,5)
+result, metrics =  optimizer.optimize(100,500,40)
 
 #Performances
 iterations =  range(1, len(metrics['worse_fitness'])+1)
@@ -61,103 +123,55 @@ dataset_e =[]
 i = 0
 itab= []
 
-bar_width = 0.35
+sommes_ecart= {}
+sommes_ecart['start_traj'] = 0
+sommes_ecart['start_bar'] = 0
+sommes_ecart['midle_traj'] = 0
+sommes_ecart['midle_bar'] = 0
+sommes_ecart['stop_traj'] = 0
+sommes_ecart['stop_bar'] = 0
+sommes_ecart['data_traj'] = 0
+sommes_ecart['data_bar'] = 0
+
 for item in dataset:
     itab.append(i)
 
     start_x.append(start_solution_dataset[i]['x'])
-    midle_x.append(midle_solution_dataset[i]['x'])
-    solution_x.append(end_solution_dataset[i]['x'])
-    dataset_x.append(item['x'])
-
     start_y.append(start_solution_dataset[i]['y'])
-    midle_y.append(midle_solution_dataset[i]['y'])
-    solution_y.append(end_solution_dataset[i]['y'])
-    dataset_y.append(item['y'])
-
     start_e.append(start_solution_dataset[i]['e'])
+    sommes_ecart['start_traj'] += sqrt(pow((start_solution_dataset[i]['x'] - item['x']), 2) +  pow((start_solution_dataset[i]['y'] - item['y']), 2)) 
+    sommes_ecart['start_bar'] += sqrt(pow((start_solution_dataset[i]['e'] - item['e']), 2))
+
+
+    midle_x.append(midle_solution_dataset[i]['x'])
+    midle_y.append(midle_solution_dataset[i]['y'])
     midle_e.append(midle_solution_dataset[i]['e'])
+    sommes_ecart['midle_traj'] += sqrt(pow((midle_solution_dataset[i]['x'] - item['x']), 2) +  pow((midle_solution_dataset[i]['y'] - item['y']), 2)) 
+    sommes_ecart['midle_bar'] += sqrt(pow((midle_solution_dataset[i]['e'] - item['e']), 2))
+
+
+    
+    solution_x.append(end_solution_dataset[i]['x'])
+    solution_y.append(end_solution_dataset[i]['y'])
     solution_e.append(end_solution_dataset[i]['e'])
+    sommes_ecart['stop_traj'] += sqrt(pow((end_solution_dataset[i]['x'] - item['x']), 2) +  pow((end_solution_dataset[i]['y'] - item['y']), 2)) 
+    sommes_ecart['stop_bar'] += sqrt(pow((end_solution_dataset[i]['e'] - item['e']), 2))
+
+
+    dataset_x.append(item['x'])
+    dataset_y.append(item['y'])
     dataset_e.append(item['e'])
+
 
     i +=1
 
-width = 0.27  
-fig, axs = plt.subplots(3, 2)
-axs[0,0].plot(start_x, start_y, dataset_x, dataset_y, label="Trajectoires")
-axs[0,0].set_ylabel("position sur a l'ordonnee")
-axs[0,0].set_xlabel("position sur a l'abscisse")
-axs[0,0].set_title("Trajectoires")
-axs[0,0].legend(['Solution au demarrage','Jeux de donnees'])
-axs[0,1].bar(itab, start_e, bar_width,   label="Energie")
-axs[0,1].bar(itab, dataset_e, bar_width, label="Energie")
-axs[0,1].set_ylabel("valeur de e")
-axs[0,1].set_xlabel("temps")
-axs[0,1].set_title("Variable e")
-axs[0,1].legend(['Solution au demarrage','Jeux de donnees'])
+subplot_path((solution_x,solution_y), (dataset_x, dataset_y),label_1="Trajectoire finale", filename="trajet_solution", title="Comparaison des trajectoires : Ecart =  " + str(sommes_ecart['start_traj']))
+subplot_path((midle_x,midle_y), (dataset_x, dataset_y),label_1="Trajectoire a mi parcours", filename="trajet_mi_parcours", title="Comparaison des trajectoires : Ecart =  " + str(sommes_ecart['midle_traj']))
+subplot_path((start_x,start_y), (dataset_x, dataset_y), label_1="Trajectoire au demarrage", filename="trajet_demarrage", title="Comparaison des trajectoires : Ecart =  " + str(sommes_ecart['stop_traj'] -  sommes_ecart['data_traj']))
 
+plot_bar(start_e,dataset_e,filename="bar_demarrage", title="Comparaison de l'energie : Ecart =  "  + str(sommes_ecart['start_bar']))
+plot_bar(midle_y,dataset_e,filename="bar_mi_parcours", title="Comparaison de l'energie : Ecart =  " + str(sommes_ecart['midle_bar']))
+plot_bar(solution_e,dataset_e,filename="bar_solution", title="Comparaison de l'energie : Ecart =  " + str(sommes_ecart['stop_bar']))
 
-axs[1,0].plot(midle_x, midle_y, dataset_x, dataset_y, label="Trajectoires")
-axs[1,0].set_ylabel("position sur a l'ordonnee")
-axs[1,0].set_xlabel("position sur a l'abscisse")
-axs[1,0].set_title("Trajectoires")
-axs[1,0].legend(['Solution a mi-parcours','Jeux de donnees'])
-axs[1,1].bar(itab, midle_e, bar_width, label="Energie")
-axs[1,1].bar(itab, dataset_e, bar_width, label="Energie")
-axs[1,1].set_ylabel("valeur de e")
-axs[1,1].set_xlabel("temps")
-axs[1,1].set_title("Variable e")
-axs[1,1].legend(['Solution a mi-parcours','Jeux de donnees'])
-
-
-axs[2,0].plot(solution_x, solution_y, dataset_x, dataset_y, label="Trajectoires")
-axs[2,0].set_ylabel("position sur a l'ordonnee")
-axs[2,0].set_xlabel("position sur a l'abscisse")
-axs[2,0].set_title("Trajectoires")
-axs[2,0].legend(['Solution trouvee','Jeux de donnees'])
-axs[2,1].bar(itab, solution_e, bar_width, label="Energie")
-axs[2,1].bar(itab, dataset_e, bar_width, label="Energie")
-axs[2,1].set_ylabel("valeur de E")
-axs[2,1].set_xlabel("temps")
-axs[2,1].set_title("Variable e")
-axs[2,1].legend(['Solution trouvee','Jeux de donnees'])
-
-fig.set_size_inches((8.5, 11), forward=False)
-fig.tight_layout()
-plt.savefig('Data.png', dpi=100)
-
-
-plt.clf()
-fig, axs = plt.subplots(3, 1)
-axs[0].plot(iterations, metrics['best_fitness'],  label="Evolution de la meilleure solution de la population")
-axs[0].set_xlabel('Iterations')
-axs[0].set_ylabel("Adaptation")
-axs[0].legend()
-
-axs[1].plot(iterations, metrics['worse_fitness'], label="Evolution de la solution la moins bonne de la population")
-axs[1].set_xlabel('Iterations')
-axs[1].set_ylabel("Adaptation")
-axs[1].legend()
-
-axs[2].plot(iterations, metrics['fitness_average'], label="Evaluation  moyenne de la population")
-axs[2].set_xlabel('Iterations')
-axs[2].set_ylabel("Adaptation")
-axs[2].set_title("Evaluation  moyenne de la population")
-axs[2].legend()
-
-fig.tight_layout()
-plt.savefig('Evolution.png')
-
-plt.clf()
-
-'''
-fig = plt.figure()
-ax = fig.add_subplot(111)
-rects1 = ax.bar(itab, start_e, bar_width,   label="Energie")
-rects2 = ax.bar(itab, dataset_e, bar_width, label="Energie")
-ax.set_ylabel("valeur de e")
-ax.set_xlabel("temps")
-ax.set_title("Variable e")
-ax.legend(['Solution au demarrage','Jeux de donnees'])
-plt.savefig('A.png')
-'''
+plot_path(iterations, metrics['best_fitness'],  filename="evolution_best", title="Evolution de l'adapation de la meilleure solutions")
+plot_path( iterations, metrics['fitness_average'],filename="evolution_mean", title="Evolution de l'adapation moyenne de la population")
